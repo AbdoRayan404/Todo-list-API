@@ -1,0 +1,34 @@
+GET http://127.0.0.1:5000/api/tasks/Terry-404
+
+###
+PUT http://127.0.0.1:5000/api/tasks/
+Content-Type: application/json
+
+{
+    "token": "Terry-404",
+    "password": "12345678",
+    "task": "Create the repo",
+    "state": true
+}
+
+###
+
+DELETE http://127.0.0.1:5000/api/tasks/
+Content-Type: application/json
+
+{
+    "token": "Terry-404",
+    "password": "12345678",
+    "task": "Create the repo"
+}
+
+###
+POST http://127.0.0.1:5000/api/tasks/
+Content-Type: application/json
+
+{
+    "action": "task",
+    "token": "Terry-404",
+    "password": "12345678",
+    "task": "Create new task"
+}
