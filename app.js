@@ -1,7 +1,8 @@
-//TODO: GET Read Tasks API (token)
-//TODO: PUT Update Task:State API (token & password)
-//TODO: DELETE Delete Task API (token & Apassword)
-//TODO: POST Create Token/Task API (dpeneds)
+// API's
+//TODO: GET Read Tasks API (token) --done--
+//TODO: PUT Update Task:State API (token & password) --done--
+//TODO: DELETE Delete Task API (token & Apassword) --done--
+//TODO: POST Create Token/Task API (dpeneds) --done--
 //INFO: POST is for creating tasks and tokens.
 ///////////////////////////////////////////////////////////////////
 /*
@@ -37,12 +38,16 @@ let Passwords = {
 }
 
 app.use(bodyParser.json())
+app.use(express.static("./public"))
 
 ///------- API's -------///
 
 //Read API (GET) Access:Token
 //Takes: Token
 app.get('/api/tasks/:token', (req,res) =>{
+    //logging
+    console.log(`API request:- METHOD: GET, Token: ${req.params.token}, IP: ${req.ip}`)
+
     //check if token exist
     let task = Tokens.hasOwnProperty(req.params.token)
     if(!task){
@@ -56,6 +61,9 @@ app.get('/api/tasks/:token', (req,res) =>{
 //Update API (PUT) Access:Token & Password
 //Takes: Token, Password, Task, State
 app.put('/api/tasks/', (req,res) =>{
+    //logging
+    console.log(`API request:- METHOD: PUT, Token: ${req.params.token}, Task: ${req.body.task}, State:${req.body.state}, IP: ${req.ip}`)
+    
     //check if token exist
     let token = Tokens.hasOwnProperty(req.body.token)
     if(!token){
@@ -88,12 +96,14 @@ app.put('/api/tasks/', (req,res) =>{
     }else{
         res.status(500).send('Server couldnt do the changes.')
     }
-    
 })
 
 //Delete API (DELETE) Access:Token & Password
 //Takes:Token, Password, Task
 app.delete('/api/tasks/', (req,res) =>{
+    //logging
+    console.log(`API request:- METHOD: DELETE, Token: ${req.params.token}, Task: ${req.params.task}, IP: ${req.ip}`)
+
     //check if token exist
     let token = Tokens.hasOwnProperty(req.body.token)
     if(!token){
@@ -124,6 +134,7 @@ app.delete('/api/tasks/', (req,res) =>{
 
 //Create API (POST) Access:Depends
 //Takes: Token:- action, Token, password Task:- action, token, password, task
+//TODO: add logging
 app.post('/api/tasks', (req,res) =>{
     let action = req.body.action
 
@@ -185,5 +196,5 @@ app.post('/api/tasks', (req,res) =>{
 })
 
 app.listen(process.env.PORT || 3000, () =>{
-    console.log('app is running on port:5000')
+    console.log('app is running on port:3000')
 })
