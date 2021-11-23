@@ -6,7 +6,7 @@ CRUD API ready to use, just merge it with database
 # How to use it?
 - Clone the repo
 - run "npm i" to download the needed packages
-- run "npm start" to start app.js on nodemon
+- run "npm start" to start app.js
 
 # preview
 ![get](https://user-images.githubusercontent.com/44875260/143018167-9a9dbfa8-6a75-445f-a454-975034ce04c0.png)
