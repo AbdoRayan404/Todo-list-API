@@ -3,10 +3,16 @@ CRUD API ready to use, just merge it with database
 
 # Version 1.0.0
 
+# Version 1.1.0
+- Adding CORS so anyone can use it from any web-app
+- Logging
+- Fixing Bug (check comments inside the code)
+
 # How to use it?
 - Clone the repo
 - run "npm i" to download the needed packages
 - run "npm start" to start app.js
+- or run "npm run dev" to start nodemon
 
 # preview
 ![get](https://user-images.githubusercontent.com/44875260/143018167-9a9dbfa8-6a75-445f-a454-975034ce04c0.png)
