@@ -5,6 +5,11 @@
 //TODO: POST Create Token/Task API (dpeneds) --done--
 //INFO: POST is for creating tasks and tokens.
 ///////////////////////////////////////////////////////////////////
+// V1.1.0
+//TODO: Setup CORS to all routers --done--
+//INFO: CORS is Cross-Origin-Resource-Sharing so anyone can add the API to it's web-app
+//TODO: create and add logging middleware to all routers --done--
+//FIXME: Sending Result more than once Bug --done--
 /*
 //INFO: Token is "Profile" name so.. each token holds tasks:state
         to access this Token fully access you need to provide the token password.
@@ -13,7 +18,9 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const app = express();
+
 
 //INFO: object to store Tasks with Tokens
 //Token:{Task:State}
@@ -37,54 +44,80 @@ let Passwords = {
     "Terry-404": "Terry-404"
 }
 
+app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static("./public"))
+
+///------ Middleware ------///
+
+//Logging Middleware
+const log = (req,res,next) =>{
+    if(req.method === "GET"){
+        console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, IP: ${req.ip}`)
+    }
+    else if(req.method === "PUT"){
+        console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Task: ${req.body.task}, State:${req.body.state}, IP: ${req.ip}`)
+    }
+    else if(req.method === "DELETE"){
+        console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Task: ${req.params.task}, IP: ${req.ip}`)
+    }
+    else if(req.method === "POST"){
+        if(req.body.action === "task"){
+            console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Password: ${req.params.password}, Task: ${req.params.task}, IP: ${req.ip}`)
+        }
+        else if(req.body.action === "token"){
+            console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Password: ${req.params.password}, IP: ${req.params.ip}`)
+        }
+    }
+
+    //go to the next middleware
+    next()
+}
 
 ///------- API's -------///
 
 //Read API (GET) Access:Token
 //Takes: Token
-app.get('/api/tasks/:token', (req,res) =>{
-    //logging
-    console.log(`API request:- METHOD: GET, Token: ${req.params.token}, IP: ${req.ip}`)
-
+app.get('/api/tokens/:token', log,(req,res) =>{
     //check if token exist
     let task = Tokens.hasOwnProperty(req.params.token)
     if(!task){
         res.status(404).send('cannot find this Token.')
+        return;
     }
 
     //send the Task object back with 200 status
-    res.status(200).send(Tokens[req.params.token])
+    res.status(200).send(JSON.stringify(Tokens[req.params.token]))
 })
 
 //Update API (PUT) Access:Token & Password
 //Takes: Token, Password, Task, State
-app.put('/api/tasks/', (req,res) =>{
-    //logging
-    console.log(`API request:- METHOD: PUT, Token: ${req.params.token}, Task: ${req.body.task}, State:${req.body.state}, IP: ${req.ip}`)
-    
+app.put('/api/tokens/', log, (req,res) =>{
     //check if token exist
     let token = Tokens.hasOwnProperty(req.body.token)
     if(!token){
         res.status(404).send('cannot find this Token.')
+        return;
     }
 
     //check if password is correct
     let password = Passwords[req.body.token]
     if(password !== req.body.password){
         res.status(403).send('password is incorrect')
+        return;
     }
 
     //check if task is inside the token
     let task = Tokens[req.body.token].hasOwnProperty(req.body.task)
     if(!task){
         res.status(404).send('the task doesnt exist')
+        return;
     }
 
     //check if state is correct
     if(req.body.state !== true && req.body.state !== false){
         res.status(400).send('wrong state.')
+        return;
     }
 
     //do the update
@@ -100,26 +133,26 @@ app.put('/api/tasks/', (req,res) =>{
 
 //Delete API (DELETE) Access:Token & Password
 //Takes:Token, Password, Task
-app.delete('/api/tasks/', (req,res) =>{
-    //logging
-    console.log(`API request:- METHOD: DELETE, Token: ${req.params.token}, Task: ${req.params.task}, IP: ${req.ip}`)
-
+app.delete('/api/tokens/', log, (req,res) =>{
     //check if token exist
     let token = Tokens.hasOwnProperty(req.body.token)
     if(!token){
         res.status(404).send('cannot find this Token.')
+        return;
     }
 
     //check if password is correct
     let password = Passwords[req.body.token]
     if(password !== req.body.password){
         res.status(403).send('password is incorrect')
+        return;
     }
 
     //check if task is inside the token
     let task = Tokens[req.body.token].hasOwnProperty(req.body.task)
     if(!task){
         res.status(404).send('the task doesnt exist')
+        return;
     }
 
     //delete the task
@@ -134,8 +167,7 @@ app.delete('/api/tasks/', (req,res) =>{
 
 //Create API (POST) Access:Depends
 //Takes: Token:- action, Token, password Task:- action, token, password, task
-//TODO: add logging
-app.post('/api/tasks', (req,res) =>{
+app.post('/api/tokens', log, (req,res) =>{
     let action = req.body.action
 
     if(action === "task"){
@@ -143,18 +175,21 @@ app.post('/api/tasks', (req,res) =>{
         let token = Tokens.hasOwnProperty(req.body.token)
         if(!token){
             res.status(404).send('cannot find this Token.')
+            return;
         }
 
         //check if password is correct
         let password = Passwords[req.body.token]
         if(password !== req.body.password){
             res.status(403).send('password is incorrect')
+            return;
         }
         
         //check if task exist
         let task = Tokens[req.body.token].hasOwnProperty(req.body.task)
         if(task){
             res.status(400).send('this task already exist.')
+            return;
         }
 
         //add the task
@@ -171,12 +206,14 @@ app.post('/api/tasks', (req,res) =>{
         //check if token and password is more than 5 chars
         if(req.body.token.length < 5 && req.body.password.length < 5){
             res.status(400).send('token or password must be 5 chars or more.')
+            return;
         }
 
         //check if token doesn't exist already
         let token = Tokens.hasOwnProperty(req.body.token)
         if(token){
             res.status(400).send('token already exist')
+            return;
         }
 
         //add the token
