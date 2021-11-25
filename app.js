@@ -56,17 +56,17 @@ const log = (req,res,next) =>{
         console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, IP: ${req.ip}`)
     }
     else if(req.method === "PUT"){
-        console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Task: ${req.body.task}, State:${req.body.state}, IP: ${req.ip}`)
+        console.log(`API request:- METHOD: ${req.method}, Token: ${req.body.token}, Task: ${req.body.task}, State:${req.body.state}, IP: ${req.ip}`)
     }
     else if(req.method === "DELETE"){
-        console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Task: ${req.params.task}, IP: ${req.ip}`)
+        console.log(`API request:- METHOD: ${req.method}, Token: ${req.body.token}, Task: ${req.body.task}, IP: ${req.ip}`)
     }
     else if(req.method === "POST"){
         if(req.body.action === "task"){
-            console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Password: ${req.params.password}, Task: ${req.params.task}, IP: ${req.ip}`)
+            console.log(`API request:- METHOD: ${req.method}, Token: ${req.body.token}, Password: ${req.body.password}, Task: ${req.body.task}, IP: ${req.ip}`)
         }
         else if(req.body.action === "token"){
-            console.log(`API request:- METHOD: ${req.method}, Token: ${req.params.token}, Password: ${req.params.password}, IP: ${req.params.ip}`)
+            console.log(`API request:- METHOD: ${req.method}, Token: ${req.body.token}, Password: ${req.body.password}, IP: ${req.ip}`)
         }
     }
 
